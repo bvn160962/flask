@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form name="form_date" action="" method="POST">
+        <input type="week" name="week" value="">
+    </form>
+
+    <form name="form" action="" method="POST">
+        <p hidden>
+            <input type="text" id="project_id" name="project_id" value="id1">
+            <input type="text" id="entry_id" name="entry_id" value="id2">
+        </p>
+        <p>
+            <label for="hours">Hours:</label>
+            <input type="text" id="hours" name="hours" placeholder="-">
+            <label for="note">Note:</label>
+            <input type="text" id="note" name="note" placeholder="Заметка">
+
+            <button type="submit" name="btn_submit" value="submit">Submit</button>
+            <button type="reset" name="btn_reset" value="clear">Clear</button>
+            <!--button type="button" name="btn_submit" formaction="/upload/">Submit</button-->
+        </p>
+        <p>
+            <table>
+               <tr>
+                <td>
+                    <button type="submit" name="btn_c11_name" value="1_1">6</button>
+                </td>
+                <td>
+                    <button type="submit" name="btn_c12_name" value="1_2">12</button>
+                </td>
+               </tr>
+             </table>
+        </p>
+    </form>
+</body>
+</html>
