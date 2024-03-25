@@ -10,7 +10,7 @@ import util_module as util
 
 DB_CONNECT = None
 PG_HOST = 'localhost'
-PG_PORT = '54321'
+PG_PORT = '5432'
 PG_DATABASE = 'postgres'
 PG_USER = 'postgres'
 PG_PASSWORD = 'postgres'
