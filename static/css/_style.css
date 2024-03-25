@@ -1,0 +1,24 @@
+
+/*  ко всем тэгам p даже с указанием class
+*/
+p {
+    width:100%;
+    display:inline-block;
+    margin-block: 2px;
+}
+
+/* class="b3" - к параметрам из p добавятся параметры из b3
+*/
+.b3 {
+    border: 3px solid;
+}
+
+/* применяется только к тэгу с class="pb5"
+*/
+.pb5 {
+    width:100%;
+    display:inline-block;
+    margin-block: 2px;
+    border: 5px solid;
+}
+

@@ -2,107 +2,75 @@ import traceback
 
 from flask import Flask, request
 
-import data_module
 import ui_module
+import settings
+import util_module as util
+import app_module as app
 
-FLD_HOURS = 'hours'
-FLD_NOTE = 'note'
-
-TABLE_BUTTON_VALUE = 'table_cell_btn'
-SAVE_BUTTON_VALUE = 'submit_btn'
-WEEK_BUTTON_VALUE = 'week_btn'
-
-app = Flask(__name__)
-
-# Creating a route that has both GET and POST request methods
-@app.route('/', methods=['GET', 'POST'])
-def message():
-    # POST
-    #
-    html = 'HTML страница не сгенерирована!'
-
-    values = request.form
-    print(f'values: {values}')
-
-    if request.method == 'POST':
-        print(f'POST: ...')
-
-        try:
-            for value in values:
-                if value == TABLE_BUTTON_VALUE:  # Если нажата одна из кнопок в таблице
-                    print('Нажата кнопка в Таблице')
-                    val = values[value]
-                    s = val.split('#')
-                    if s is None: raise Exception('Ошибка при парсинге values: None')
-                    else:
-                        if len(s) != 2:
-                            raise Exception(f'Ошибка при парсинге values: {len(s)}')
-                    project_id = s[0]
-                    tsh_id = s[1]
-                    tsh_entry = data_module.get_entry(project_id, tsh_id)
-                    if tsh_entry is None:
-                        raise Exception(f'Timesheet {project_id}, {tsh_id} не найден')
-                    print(f'tsh_entry: {tsh_entry}')
-
-                    html = ui_module.create_html_etree(project_id, tsh_id, tsh_entry)
-                    if html is None:
-                        raise Exception('Не удалось сформировать HTML')
+app_cache = {}
+application = Flask(__name__)
 
 
-                if value == SAVE_BUTTON_VALUE:
-                    print('Нажата кнопка Save')
-                    print(f'form: {request.form}')
+def _test():
+    # return ui_module.create_html_static()
+    return ui_module.t_html()
+    # s = settings.MODULES[settings.M_TIMESHEETS]['url']
+    # print(f'=={s}')
 
-                    prj_id = ''
-                    tsh_id = ''
-                    inp_hours = ''
-                    inp_note = ''
-                    for value in values:
-                        if value == ui_module.PROJECT_ID_NAME: prj_id = values[value]
-                        if value == ui_module.TIMESHEET_ID_NAME: tsh_id = values[value]
-                        if value == ui_module.INPUT_HOURS_NAME: inp_hours = values[value]
-                        if value == ui_module.INPUT_NOTE_NAME: inp_note = values[value]
+#
+# TIMESHEETS
+#
+@application.route(settings.MODULES[settings.M_TIMESHEETS]['url'], methods=['GET', 'POST'])
+def timesheets():
+    try:
+        # _test()
+        # return ui_module.t_html()
 
-                    if prj_id == '' or tsh_id == '':
-                        raise Exception(f'Пустые значения идентификаторов project={prj_id}, timesheet={tsh_id}')
-                    data_module.update_entry(prj_id, tsh_id, {FLD_HOURS: inp_hours, FLD_NOTE: inp_note})
-                    html = ui_module.create_html_etree()
+        values = request.form
+        util.log_debug(f'timesheets: FORM={values}')
 
+        host = request.environ.get('REMOTE_ADDR')
+        user_id = util.get_current_user_id(host)  # set user_id in cache if None!!!
+        util.set_cache(host)
 
-        except Exception as ex:
-            traceback.print_exc()
-            print(f'**error: {ex}')
-            return 'Error'
+        # Установить неделю в кэш
+        #
+        week = util.get_current_week(host)
+        if week is None or week == '':
+            current_week = util.get_week()
+            util.set_cache_property(host, settings.C_WEEK, current_week)
+
+        html = ui_module.create_info_html(i_type=settings.INFO_TYPE_ERROR, msg='Empty HTML. Возможно, не задан обработчик кнопки.', host=host)
+        # return html
+
+        # GET
+        #
+        if request.method == 'GET':
+            util.log_info(f'GET: ...')
+            html = app.timesheets_get(host)
+
+        # POST
+        #
+        if request.method == 'POST':
+            util.log_info(f'POST: ...')
+            html = app.timesheets_post(values, host)
+
+            if html is None or html == '':
+                html = ui_module.create_info_html(i_type=settings.INFO_TYPE_ERROR, host=host, msg='Не удалось сформировать HTML. \nВозможно, не задан обработчик кнопки.')
 
         return html #'nothing', 204
 
-    # GET
-    #
-    if request.method == 'GET':
-        print(f'GET: ...')
-        # return ui_module.create_html_jinja()
-        # return ui_module.create_html_static()
-        # return ui_module.create_html_minidom()
-        return ui_module.create_html_etree()
+    except Exception as ex:
+        traceback.print_exc()
+        util.log_error(f'{ex}')
+        return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_TIMESHEETS]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
 
 
-# @app.route('/upload')
-# def upload():
-#     print('upload')
-
-
-# @app.route('/background_process_test')
-# def background_process_test_():
-#     print('Test.OnClick(...)')
 #
-#     form = request.form
-#     print(f'form: {form.listvalues()}')
-#
-#     return 'nothing'
-
-
-# start the application
+# APPLICATION
 #
 if __name__ == '__main__':
-    # Running the application and leaving the debug mode ON
-    app.run(debug=True, port=1000, host='0.0.0.0')
+
+    # util.log_info(f'root url: {app}')
+    application.run(debug=True, port=1000, host='0.0.0.0')
+
