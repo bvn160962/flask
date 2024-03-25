@@ -2,9 +2,6 @@ import traceback
 
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
-import datetime
-
-import data_module
 import settings
 import util_module as util
 

@@ -65,6 +65,18 @@ def timesheets():
         util.log_error(f'{ex}')
         return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_TIMESHEETS]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
 
+@application.route(settings.MODULES[settings.M_APPROVEMENT]['url'], methods=['GET', 'POST'])
+def approvement():
+    try:
+        host = request.environ.get('REMOTE_ADDR')
+
+        return 'nothing', 204
+
+    except Exception as ex:
+        traceback.print_exc()
+        util.log_error(f'{ex}')
+        return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_APPROVEMENT]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
+
 
 #
 # APPLICATION

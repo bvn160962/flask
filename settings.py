@@ -9,8 +9,11 @@ LOG_FILE_LEVEL = logging.DEBUG
 LOG_FILE_FORMAT = '%(asctime)s %(funcName)s, line %(lineno)s: %(message)s'
 
 M_TIMESHEETS = 'Timesheets'
+M_APPROVEMENT = 'Approvement'
+
 MODULES = {
-    M_TIMESHEETS: {'name': 'Табель', 'url': '/timesheets'}
+    M_TIMESHEETS: {'name': 'Табель', 'url': '/timesheets'},
+    M_APPROVEMENT: {'name': 'Согласование', 'url': '/approvemnet'}
 }
 
 # WEEK = '2024-W11'
