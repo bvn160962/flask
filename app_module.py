@@ -1,3 +1,4 @@
+import pg_module
 import util_module as util
 import settings
 import ui_module
@@ -65,8 +66,9 @@ def prev_week_pressed(host):
 
 
 def timesheets_update_button(host):
+    util.log_debug(f'Нажата кнопка Update Timesheets')
     util.clear_cache(host)
-    util.log_debug(f'Нажата кнопка "Update Timesheets"')
+    pg_module.DB_CONNECT = None
     return ui_module.create_timesheet_html(host=host)
 
 
@@ -127,6 +129,8 @@ def timesheets_save_button(host=None, values=None):
     return html
 
 
+# POST
+#
 def timesheets_post(values, host):
     html = ''
     for value in values:
@@ -181,7 +185,7 @@ def timesheets_post(values, host):
         # Нажата кнопка LOGOFF
         #
         if value == settings.LOGOFF_BUTTON:
-            # data_module.get_entries_for_approval(102)
+            data_module.get_entries_for_approval(102)
             # data_module.update_status((157, 167), True)
 
             html = ui_module.create_info_html(settings.INFO_TYPE_INFORMATION, 'Нажата кнопка Sign off', host=host)
@@ -204,6 +208,9 @@ def timesheets_post(values, host):
     # util.log_debug(f'timesheets.POST: Не задан обработчик кнопки {value}')
     return html
 
+
+# GET
+#
 def timesheets_get(host):
     return ui_module.create_timesheet_html(host=host)
 

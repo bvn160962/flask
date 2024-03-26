@@ -1,7 +1,5 @@
 from flask import render_template
 from xml.etree import ElementTree as et
-from xml.dom.minidom import getDOMImplementation
-import jinja2
 
 import data_module
 import settings
@@ -28,7 +26,7 @@ class BaseHTML:
     def __init__(self, title, module, host):
         util.log_debug(f'BaseHTML: New(title={title})')
         self.__html = et.Element('html', attrib={'lang': 'ru'})
-        self.c_module = module
+        # self.c_module = module
 
 
         # HEAD
@@ -48,7 +46,11 @@ class BaseHTML:
         p = et.SubElement(self.__form, 'p class="b2_gray"')
         # MODULE
         m = et.SubElement(p, 'a style="margin:10px;"')
-        m.text = module['name'] + ': ' + f'user: {str(util.get_current_user_id(host))}, url={module["url"]}'
+
+        if host is None or module is None:
+            m.text = ''
+        else:
+            m.text = module['name'] + ': ' + f'user: {str(util.get_cache_property(host, settings.C_USER_ID))}, url={module["url"]}'
 
         # LOGOFF button
         log_off = et.SubElement(p,
@@ -57,7 +59,7 @@ class BaseHTML:
                                     'type': 'submit',
                                     'name': settings.LOGOFF_BUTTON,
                                     'style': 'margin-right: 7px;',
-                                    'class': 'right btn-hxw btn-cursor'
+                                    'class': 'right btn-hxw'
                                 })
         i = et.SubElement(log_off, 'i', {'class': 'fa fa-user-circle-o fa-lg'})  # fa-user-o
         i.text = '\n'  # !!!Обязательно!!! Иначе, создает одиночный тэг <i .... />, вместо парного <i> ... </i>
@@ -69,7 +71,7 @@ class BaseHTML:
                                     'type': 'submit',
                                     'name': settings.UPDATE_TIMESHEET_BUTTON,
                                     'style': 'margin-right: 7px;',
-                                    'class': 'right btn-hxw btn-cursor'
+                                    'class': 'right btn-hxw'
                                 })
         i = et.SubElement(log_off, 'i', {'class': 'fa fa-refresh fa-lg'})
         i.text = '\n'
@@ -124,17 +126,17 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     col = et.SubElement(row, 'td colspan="5" align="center"')  # Объединенная ячейка
 
     # Кнопка Текущая неделя
-    btn = et.SubElement(col, 'button title="Текущая неделя" class="btn-hxw btn-cursor"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_CURRENT, 'value': 'week'})
+    btn = et.SubElement(col, 'button title="Текущая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_CURRENT})
     i = et.SubElement(btn, 'i class="fa fa-calendar" aria-hidden="true"')
     i.text = '\n'
 
     # Кнопка Назад
-    btn = et.SubElement(col, 'button title="Предыдущая неделя" class="btn-hxw btn-cursor"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_PREV, 'value': 'week'})
+    btn = et.SubElement(col, 'button title="Предыдущая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_PREV})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-left fa-lg" aria-hidden="true"')
     i.text = '\n'
 
     # Кнопка Вперед
-    btn = et.SubElement(col, 'button title="Следующая неделя" class="btn-hxw btn-cursor"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_NEXT, 'value': 'week'})
+    btn = et.SubElement(col, 'button title="Следующая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_NEXT})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-right fa-lg" aria-hidden="true"')
     i.text = '\n'
 
@@ -142,7 +144,7 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     et.SubElement(col, 'input ' + settings.ENTER_DISABLE, attrib={'type': 'week', 'name': INPUT_WEEK_NAME, 'value': week, 'style': 'margin:2px; padding:2px; border: 2px solid black; border-radius: 10px;'})
 
     # Кнопка Применить
-    btn = et.SubElement(col, 'button title="Выбрать неделю" class="btn-hxw btn-cursor"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON, 'value': 'week'})
+    btn = et.SubElement(col, 'button title="Выбрать неделю" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-down fa-lg" aria-hidden="true"')
     i.text = '\n'
 
@@ -227,22 +229,22 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     col_table = et.SubElement(row_1, 'td colspan=5 rowspan=3 align=center', {'style': 'border: 2px solid'})  # Объединенная ячейка для таблицы
     col = et.SubElement(row_1, 'td', {'align': 'center', 'valign': 'top', 'width': '50'})
     # Кнопка СОХРАНИТЬ
-    btn_save = et.SubElement(col, settings.TAG_BUTTON, attrib={'type': 'submit', 'name': settings.SAVE_BUTTON, 'value': 'submit'})
+    btn_save = et.SubElement(col, 'button', attrib={'type': 'submit', 'name': settings.SAVE_BUTTON, 'value': 'submit'})
     btn_save.text = 'сохранить'
 
-    row_2 = et.SubElement(table, 'tr')
+    et.SubElement(table, 'tr')
     # Кнопка УДАЛИТЬ
     if tsh_id == '':
-        b_tag_name = settings.TAG_BUTTON + ' disabled'
+        b_tag_name = 'button disabled'
     else:
-        b_tag_name = settings.TAG_BUTTON
+        b_tag_name = 'button'
     btn_delete = et.SubElement(col, b_tag_name, attrib={'type': 'submit', 'name': settings.DELETE_BUTTON, 'value': 'delete'})
     btn_delete.text = 'удалить'
 
-    row_3 = et.SubElement(table, 'tr')
+    et.SubElement(table, 'tr')
     # Кнопка СОЗДАТЬ
-    btn_new = et.SubElement(col, settings.TAG_BUTTON, attrib={'type': 'submit', 'name': settings.NEW_BUTTON, 'value': 'new'})
-    btn_new.text = 'создать'
+    # btn_new = et.SubElement(col, settings.TAG_BUTTON, attrib={'type': 'submit', 'name': settings.NEW_BUTTON, 'value': 'new'})
+    # btn_new.text = 'создать'
 
     # Кнопка ОБНОВИТЬ (зачитать из БД) - нужно перенести в HEADER
     #
@@ -350,10 +352,7 @@ def add_timesheet_table_area(host=None, form=None, data=None, column=None):
 
 def create_info_html(i_type='', msg='', url='', host=None):
     if msg == '':
-        msg = 'Предупреждение...'
-
-    if url == '':
-        url = settings.MODULES[settings.M_TIMESHEETS]['url']
+        msg = 'Информация'
 
     if i_type == '':
         i_type = settings.INFO_TYPE_INFORMATION
@@ -362,8 +361,9 @@ def create_info_html(i_type='', msg='', url='', host=None):
     p = base_html.get_form()
 
     # RETURN
-    ret_url = et.SubElement(p, 'a', attrib={'href': url, 'type': 'submit'})
-    ret_url.text = 'Возврат...'
+    if url != '':
+        ret_url = et.SubElement(p, 'a', attrib={'href': url, 'type': 'submit'})
+        ret_url.text = 'Возврат...'
 
     # MESSAGE
     h = et.SubElement(p, 'H3')
@@ -395,18 +395,19 @@ def create_delete_confirm_html(host=None):
     msg += f'   - Часы: {entry[settings.F_TSH_HOURS]}\n'
     msg += f'   - Статус: {entry[settings.F_TSH_STATUS]}\n'
     msg += f'   - Замечание: {entry[settings.F_TSH_NOTE]}\n'
+    msg += f'   - Комментарий: {entry[settings.F_TSH_COMMENT]}\n'
 
-    text = et.SubElement(p_msg, 'textarea cols="40" rows="6" readonly')  # style="background-color:LightGray"
+    text = et.SubElement(p_msg, 'textarea cols="40" rows="7" readonly')  # style="background-color:LightGray"
     text.text = msg
 
     # CONFIRM AREA
     #
     p_confirm = et.SubElement(form, 'p')
 
-    btn_yes = et.SubElement(p_confirm, 'button', attrib={'type': 'submit', 'name': settings.DELETE_BUTTON_YES, 'style': 'margin-left:120px;'})  #   style="margin-left:150px;"
+    btn_yes = et.SubElement(p_confirm, 'button', attrib={'type': 'submit', 'name': settings.DELETE_BUTTON_YES, 'style': 'margin-left:100px; width: 60px;'})  #   style="margin-left:150px;"
     btn_yes.text = 'Да'
 
-    btn_no = et.SubElement(p_confirm, 'button', attrib={'type': 'submit', 'name': settings.DELETE_BUTTON_NO})
+    btn_no = et.SubElement(p_confirm, 'button', attrib={'type': 'submit', 'name': settings.DELETE_BUTTON_NO, 'style': 'width: 60px;'})
     btn_no.text = 'Нет'
 
     return base_html.get_html()

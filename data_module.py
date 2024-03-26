@@ -5,30 +5,6 @@ import settings
 import util_module as util
 
 
-# For static data (DICT)
-#
-# time_sheets_data = {
-#     'project_id_1': {
-#         '20': {'time_sheet_id1': {settings.FLD_HOURS: '5', settings.FLD_NOTE: 'note 1'}},
-#         '21': {'time_sheet_id2': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#         '22': {'time_sheet_id3': {settings.FLD_HOURS: '8', settings.FLD_NOTE: 'note 3'}},
-#         '23': {'time_sheet_id4': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#         '24': {'time_sheet_id5': {settings.FLD_HOURS: '8', settings.FLD_NOTE: 'note 5'}},
-#         '25': {'time_sheet_id6': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#         '26': {'time_sheet_id7': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#     },
-#     'project_id_2': {
-#         '20': {'time_sheet_id10': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#         '21': {'time_sheet_id20': {settings.FLD_HOURS: '5', settings.FLD_NOTE: 'note 2'}},
-#         '22': {'time_sheet_id30': {settings.FLD_HOURS: '8', settings.FLD_NOTE: 'note 3'}},
-#         '23': {'time_sheet_id40': {settings.FLD_HOURS: '1', settings.FLD_NOTE: 'note 4'}},
-#         '24': {'time_sheet_id50': {settings.FLD_HOURS: '8', settings.FLD_NOTE: 'note 5'}},
-#         '25': {'time_sheet_id60': {settings.FLD_HOURS: '3', settings.FLD_NOTE: 'note 6'}},
-#         '26': {'time_sheet_id70': {settings.FLD_HOURS: '-', settings.FLD_NOTE: ''}},
-#     },
-# }
-
-
 def get_data(user_id=None, week=None):
     time_sheets_data = get_all_entries(user_id=user_id, week=week)
     return time_sheets_data
@@ -40,18 +16,6 @@ def get_entry(tsh_id=None):
     tsh_dict = get_timesheet_dict(tsh_id=tsh_id)
     # util.log_debug(f'tsh_dict: {tsh_dict}')
     return tsh_dict
-
-    # For static data (DICT)
-    #
-    # p_dict = time_sheets_data[prj_id]
-    #
-    # for i_dict in p_dict.values():
-    #     for k in i_dict.keys():
-    #         if k == tsh_id:
-    #             # util.log_debug(f'i_dict={i_dict[k]}')
-    #             return i_dict[k]
-    #
-    # return None
 
 
 def update_entry(tsh_id=None, data=None):
@@ -153,15 +117,10 @@ def get_entries_for_approval(user_id=None):
         data = {}
         for e in entries_data:
             tsh_id = str(getattr(e, settings.F_TSH_ID))
-            # usr_name = str(getattr(e, settings.F_TSH_USER_NAME))
-            # date = str(getattr(e, settings.F_TSH_DATE))
-            # prj_name = str(getattr(e, settings.F_TSH_PRJ_NAME))
-            # hours = str(getattr(e, settings.F_TSH_HOURS))
-            # note = str(getattr(e, settings.F_TSH_NOTE))
             data[tsh_id] = {
-                settings.F_TSH_USER_NAME: str(getattr(e, settings.F_TSH_USER_NAME)),
+                settings.F_USR_NAME: str(getattr(e, settings.F_USR_NAME)),
                 settings.F_TSH_DATE: str(getattr(e, settings.F_TSH_DATE)),
-                settings.F_TSH_PRJ_NAME: str(getattr(e, settings.F_TSH_PRJ_NAME)),
+                settings.F_PRJ_NAME: str(getattr(e, settings.F_PRJ_NAME)),
                 settings.F_TSH_HOURS: str(getattr(e, settings.F_TSH_HOURS)),
                 settings.F_TSH_NOTE: str(getattr(e, settings.F_TSH_NOTE))
             }
@@ -187,21 +146,12 @@ def get_all_timesheet_dict(week=None, entries=None):
     for d in dates:
         dates_dict[d] = {settings.EMPTY_ID_KEY: {}}
 
-    # util.log_debug(f'dates_dict: {dates_dict}')
-    #
-    # dates_dict = {
-    #  '20.03': {},
-    #  '21.03': {},
-    #  ...
-    # }
-
-
     # сформировать список проектов
     #
     time_sheets_dict = {}
     for e in entries:
-        prj_id = str(getattr(e, 'project_id'))
-        prj_name = str(getattr(e, 'name'))
+        prj_id = str(getattr(e, settings.F_TSH_PRJ_ID))
+        prj_name = str(getattr(e, settings.F_PRJ_NAME))
 
         prj_dict = {settings.F_PRJ_NAME: prj_name, settings.FLD_TSH_DICT: dates_dict.copy()}
         time_sheets_dict[prj_id] = prj_dict

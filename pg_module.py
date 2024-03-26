@@ -3,6 +3,7 @@ import traceback
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
 import settings
+import ui_module
 import util_module as util
 
 DB_CONNECT = None
@@ -21,51 +22,65 @@ def get_connect():
     try:
         if DB_CONNECT is None:
             DB_CONNECT = psycopg2.connect(host=PG_HOST, port=PG_PORT, dbname=PG_DATABASE, user=PG_USER, password=PG_PASSWORD)
-            # util.log_debug(f'Connected to database: <{PG_DATABASE}> on <{PG_HOST}>')
-        # else:
-        #     util.log_debug(f'Use existing connect {DB_CONNECT}')
+
+        # util.log_debug(f'session={DB_CONNECT}, PID={DB_CONNECT.get_backend_pid()}, status={DB_CONNECT.closed}')
         return DB_CONNECT
 
     except Exception as ex:
+        DB_CONNECT = None
         util.log_error(f'Can`t establish connection to database {ex}: host={PG_HOST}, port={PG_PORT}, dbname={PG_DATABASE}, user={PG_USER}')
         raise ex
     # finally:
     #     return DB_CONNECT
 
 
+# Проверка соединения с БД
+#
+def test_connection(host):
+    global DB_CONNECT
+    # util.log_debug('Test connection...')
+
+    try:
+        get_connect()
+        return ''
+    except Exception as ex:
+        DB_CONNECT = None
+        return ui_module.create_info_html(i_type=settings.INFO_TYPE_ERROR, msg='Нет подключения к Базе Данных!', host=host)
+
+
 class Entries:
 
-    SQL_ONE_ENTRY = 'Select id, user_id, project_id, hours, status, note, date, comment From ts_entries Where id = '
+    SQL_ONE_ENTRY = f'Select {settings.F_TSH_ALL_ID} From ts_entries Where {settings.F_TSH_ID} = %s'
 
-    SQL_INSERT_ENTRY = 'Insert INTO ts_entries (user_id, project_id, hours, status, note, date, comment) \
+    SQL_INSERT_ENTRY = f'Insert INTO ts_entries ({settings.F_TSH_ALL}) \
                        VALUES (%s, %s, %s, %s, %s, %s, %s)\
                        '
 
-    SQL_DELETE_ENTRY = 'Delete From ts_entries Where id = '
+    SQL_DELETE_ENTRY = f'Delete From ts_entries Where {settings.F_TSH_ID} = %s'
 
-    SQL_ALL_ENTRIES = 'Select e.id, e.user_id, e.project_id, e.hours, e.status, e.note, e.date, e.comment, p.name \
-                       From ts_entries as e, ts_projects as p \
-                       Where e.date >= %s and e.date <= %s \
-                       And e.user_id = %s \
-                       And e.project_id = p.id \
-                       Order by p.name\
+    SQL_ALL_ENTRIES = f'Select {settings.F_TSH_ALL_ID}, {settings.F_PRJ_NAME} \
+                       From ts_entries, ts_projects \
+                       Where {settings.F_TSH_DATE} >= %s and {settings.F_TSH_DATE} <= %s \
+                       And {settings.F_TSH_USER_ID} = %s \
+                       And {settings.F_TSH_PRJ_ID} = {settings.F_PRJ_ID} \
+                       Order by {settings.F_PRJ_NAME}\
                       '
 
-    SQL_UPDATE_ENTRY = 'Update ts_entries \
-                        Set hours = %s, note = %s, status = %s, comment = %s \
-                        Where id = %s\
+    SQL_UPDATE_ENTRY = f'Update ts_entries \
+                        Set {settings.F_TSH_HOURS} = %s, {settings.F_TSH_NOTE} = %s, {settings.F_TSH_STATUS} = %s, {settings.F_TSH_COMMENT} = %s \
+                        Where {settings.F_TSH_ID} = %s\
                        '
 
-    SQL_FOR_APPROVAL_ENTRIES = f'Select distinct e.id, e.user_id, e.project_id, e.date, e.hours, e.status, e.note, e.comment, p.name as prj_name, u.name as usr_name \
-                                From ts_entries e, ts_projects p, ts_users u \
-                                Where e.status = \'{settings.IN_APPROVE_STATUS}\' \
-                                And e.project_id = p.id \
-                                And e.user_id = u.id \
-                                And p.manager_id = '
+    SQL_FOR_APPROVAL_ENTRIES = f'Select {settings.F_TSH_ALL_ID}, {settings.F_PRJ_NAME}, {settings.F_USR_NAME} \
+                                From ts_entries, ts_projects, ts_users \
+                                Where {settings.F_TSH_STATUS} = \'{settings.IN_APPROVE_STATUS}\' \
+                                And {settings.F_TSH_PRJ_ID} = {settings.F_PRJ_ID} \
+                                And {settings.F_TSH_USER_ID} = {settings.F_USR_ID} \
+                                And {settings.F_PRJ_MANAGER_ID} = %s'
 
-    SQL_UPDATE_STATUS = 'Update ts_entries \
-                        Set status = %s \
-                        Where id in %s\
+    SQL_UPDATE_STATUS = f'Update ts_entries \
+                        Set {settings.F_TSH_STATUS} = %s \
+                        Where {settings.F_TSH_ID} in %s\
                        '
 
     # def __init__(self):
@@ -127,7 +142,7 @@ class Entries:
 
             conn = get_connect()
             with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-                curs.execute(cls.SQL_ONE_ENTRY + tsh_id)
+                curs.execute(cls.SQL_ONE_ENTRY, (tsh_id,))
                 return curs.fetchall()
 
         except Exception as ex:
@@ -166,7 +181,7 @@ class Entries:
 
             conn = get_connect()
             with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-                curs.execute(cls.SQL_DELETE_ENTRY + tsh_id)
+                curs.execute(cls.SQL_DELETE_ENTRY, (tsh_id,))
                 curs.execute('commit')
 
         except Exception as ex:
@@ -182,10 +197,10 @@ class Entries:
             i_user_id = int(user_id)
 
             conn = get_connect()
-            sql = f'{cls.SQL_FOR_APPROVAL_ENTRIES}{user_id}'
+            # sql = f'{cls.SQL_FOR_APPROVAL_ENTRIES}{user_id}'
             # util.log_debug(f'get_for_approval_entries: sql={sql}')
             with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
-                curs.execute(sql)
+                curs.execute(cls.SQL_FOR_APPROVAL_ENTRIES, (user_id,))
                 return curs.fetchall()
 
         except Exception as ex:
@@ -218,7 +233,7 @@ class Entries:
 
 class Projects:
 
-    SQL_ALL_PROJECTS = 'Select id, manager_id, name, start_date, end_date From ts_projects Order by name'
+    SQL_ALL_PROJECTS = f'Select {settings.F_PRJ_ALL} From ts_projects Order by {settings.F_PRJ_NAME}'
 
     @classmethod
     def get_all_projects(cls):
@@ -243,7 +258,7 @@ class Projects:
 
 
 
-# Реализация (отладка)
+# Отладка
 #
 if __name__ == '__main__':
     util.log_debug(f'{__name__}')

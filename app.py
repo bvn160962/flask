@@ -2,6 +2,7 @@ import traceback
 
 from flask import Flask, request
 
+import pg_module
 import ui_module
 import settings
 import util_module as util
@@ -30,6 +31,11 @@ def timesheets():
         util.log_debug(f'timesheets: FORM={values}')
 
         host = request.environ.get('REMOTE_ADDR')
+
+        html = pg_module.test_connection(host)
+        if html != '':
+            return html
+
         user_id = util.get_current_user_id(host)  # set user_id in cache if None!!!
         util.set_cache(host)
 
@@ -64,6 +70,7 @@ def timesheets():
         traceback.print_exc()
         util.log_error(f'{ex}')
         return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_TIMESHEETS]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
+
 
 @application.route(settings.MODULES[settings.M_APPROVEMENT]['url'], methods=['GET', 'POST'])
 def approvement():

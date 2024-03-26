@@ -1,5 +1,5 @@
 
-/*  ко всем тэгам p даже с указанием class
+/*  для всех p, без указания class
 */
 p {
     width: 100%;
@@ -7,25 +7,24 @@ p {
     margin-block: 2px;
 }
 
-/*
+/* для всех кнопок
 */
-.b2_gray {
-    border: 2px solid grey;
-    border-radius: 15px;
-    background-color: #E0FFFF;
-    color: #00008B;
-    line-height: 28px;
+button {
+    color: #008B8B;
     font-weight: bold;
-    /*font-style:oblique;*/
-    /*vertical-align: bottom;*/
-    /*text-align:center;*/
+    width: 100%;
+    margin:2px;
+    border-radius: 8px;
+    cursor: pointer;
 }
-
 
 /**** Кнопки в таблице
 */
 .btn-t {
     width: 50px;
+    color: black;
+    font-weight: normal;
+    border-radius: 5px;
 }
 
 .btn-t-edit {
@@ -58,8 +57,18 @@ p {
     background-color: transparent;
 }
 
-.btn-cursor {
-    cursor: pointer;
+/*
+*/
+.b2_gray {
+    border: 2px solid grey;
+    border-radius: 15px;
+    background-color: #E0FFFF;
+    color: #00008B;
+    line-height: 28px;
+    font-weight: bold;
+    /*font-style:oblique;*/
+    /*vertical-align: bottom;*/
+    /*text-align:center;*/
 }
 
 .right{
