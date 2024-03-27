@@ -1,0 +1,29 @@
+
+
+/*** Для текста Проекты в заголовке таблицы
+*/
+.a-prj-head {
+    display: inline-block;
+    width: var(--prj-head-width);
+}
+
+/*** Для текста названий атрибутов
+*/
+.a-head {
+    color: black;
+    font-weight: bold;
+}
+
+/*** Для ячеек в заголовке таблицы
+*/
+.td-header {
+    background-color: #C0C0C0;
+    font-weight: bold;
+    width: var(--btn-width);
+}
+
+/*** Для ячейки выбранной кнопки в таблице
+*/
+.td-selected {
+    border: 3px solid #0000FF;
+}

@@ -1,0 +1,65 @@
+
+/* Глобальные переменные - для всех стилей
+*/
+:root {
+    --btn-width: 50px;
+    --prj-head-width: 300px;
+    --def-color: #008B8B; /*#00008B;*/
+    --def-background: #F0FFF0;
+    --inp-height: 25px;
+}
+
+/* Задает минимальную ширину страницы (не работает!!!)
+
+html, body
+{
+   min-width: 880px;
+   display: inline-block;
+}*/
+
+/***  Для всех p
+*/
+p {
+    width: 100%;
+    display: inline-block;
+    margin-block: 2px;
+}
+
+/*** Для всех полей ввода
+*/
+input {
+    background-color: var(--def-background);
+    height: var(--inp-height);
+    border: 2px solid gray;
+}
+
+/*** Для всех полей со списком
+*/
+select {
+    background-color: #F0FFF0;
+    max-width:200px;
+    height: var(--inp-height);
+    border: 2px solid gray;
+}
+
+/*** Для p в заголовке приложения
+*/
+.p_gray {
+    border: 2px solid grey;
+    border-radius: 15px;
+    background-color: #E0FFFF;
+    color: var(--def-color);
+    line-height: 28px;
+    font-weight: bold;
+    /*font-style:oblique;*/
+    /*vertical-align: bottom;*/
+    /*text-align:center;*/
+}
+
+/* Прижимает вправо
+*/
+.right{
+    float:right;
+/*    margin:3px;*/
+}
+

@@ -5,6 +5,32 @@ import ui_module
 import data_module
 
 
+# COMMON BLOCK
+#
+def init_module(request):
+
+    # Get client host
+    host = request.environ.get('REMOTE_ADDR')
+
+    # Get form values
+    values = request.form
+    util.log_debug(f'FORM={values}')
+
+    # Check login
+    user_id = util.get_current_user_id(host)  # set user_id in cache if None!!!
+
+    # Validate cache
+    util.validate_cache(host)
+
+    # Check DB connection
+    html = pg_module.test_connection(host)
+
+    return host, values, html, user_id
+
+def logoff(module, host):
+    return ui_module.create_info_html(module=module, i_type=settings.INFO_TYPE_INFORMATION, msg='Нажата кнопка Sign off', host=host)
+
+
 # TIMESHEETS BLOCK
 #
 def timesheets_table_button(host=None, value=''):
@@ -100,7 +126,7 @@ def timesheets_save_button(host=None, values=None):
         if prj_id == '' or current_date == '' or inp_hours == '':
             msg = f'Не задано одно из обязательных значений атрибутов (prj_id={prj_id}, date={current_date}, hours={inp_hours}) при попытке создать новую запись!'
             util.log_debug(msg)
-            html = ui_module.create_info_html(settings.INFO_TYPE_WARNING, msg, settings.MODULES[settings.M_TIMESHEETS]['url'], host=host)
+            html = ui_module.create_info_html(settings.INFO_TYPE_WARNING, msg, module=settings.M_TIMESHEETS, host=host)
         else:
             data_module.insert_entry(
                 user_id=util.get_current_user_id(host),
@@ -128,6 +154,11 @@ def timesheets_save_button(host=None, values=None):
 
     return html
 
+
+# GET
+#
+def timesheets_get(host):
+    return ui_module.create_timesheet_html(host=host)
 
 # POST
 #
@@ -173,7 +204,7 @@ def timesheets_post(values, host):
 
         # Нажата кнопка REFRESH Timesheets
         #
-        if value == settings.UPDATE_TIMESHEET_BUTTON:
+        if value == settings.UPDATE_BUTTON:
             html = timesheets_update_button(host)
 
         # Нажата кнопка NEW Entry
@@ -186,9 +217,7 @@ def timesheets_post(values, host):
         #
         if value == settings.LOGOFF_BUTTON:
             data_module.get_entries_for_approval(102)
-            # data_module.update_status((157, 167), True)
-
-            html = ui_module.create_info_html(settings.INFO_TYPE_INFORMATION, 'Нажата кнопка Sign off', host=host)
+            html = ui_module.create_info_html(module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_INFORMATION, msg='Нажата кнопка Sign off', host=host)
 
         # Нажата кнопка CURRENT WEEK
         #
@@ -209,17 +238,44 @@ def timesheets_post(values, host):
     return html
 
 
-# GET
-#
-def timesheets_get(host):
-    return ui_module.create_timesheet_html(host=host)
-
-
 # PROJECTS BLOCK
 #
 
 # USERS BLOCK
 #
+def users_update_button(host):
+    util.log_debug(f'Нажата кнопка Update Users')
+    util.clear_cache(host)
+    pg_module.DB_CONNECT = None
+
+    return ui_module.create_users_html(host)
+
+
+# GET
+#
+def users_get(host):
+    return ui_module.create_users_html(host)
+
+# POST
+#
+def users_post(values, host):
+    html = ''
+    for value in values:
+        # util.log_debug(f'users_post: value={value}')
+
+        # Нажата кнопка REFRESH
+        #
+        if value == settings.UPDATE_BUTTON:
+            return users_update_button(host)
+
+        # Нажата кнопка LOGOFF
+        #
+        if value == settings.LOGOFF_BUTTON:
+            return logoff(settings.M_USERS, host)
+
+    return html
+
+
 
 # APPROVE BLOCK
 #

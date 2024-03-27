@@ -2,6 +2,7 @@ import traceback
 
 from flask import Flask, request
 
+import app_module
 import pg_module
 import ui_module
 import settings
@@ -27,17 +28,9 @@ def timesheets():
         # _test()
         # return ui_module.t_html()
 
-        values = request.form
-        util.log_debug(f'timesheets: FORM={values}')
-
-        host = request.environ.get('REMOTE_ADDR')
-
-        html = pg_module.test_connection(host)
-        if html != '':
-            return html
-
-        user_id = util.get_current_user_id(host)  # set user_id in cache if None!!!
-        util.set_cache(host)
+        host, values, html_test_db, user_id = app_module.init_module(request)
+        if html_test_db != '':
+            return html_test_db
 
         # Установить неделю в кэш
         #
@@ -46,30 +39,36 @@ def timesheets():
             current_week = util.get_week()
             util.set_cache_property(host, settings.C_WEEK, current_week)
 
-        html = ui_module.create_info_html(i_type=settings.INFO_TYPE_ERROR, msg='Empty HTML. Возможно, не задан обработчик кнопки.', host=host)
+        html = ui_module.create_info_html(
+            i_type=settings.INFO_TYPE_ERROR,
+            module=settings.M_TIMESHEETS,
+            msg='Empty HTML. Возможно, не задан обработчик кнопки.',
+            host=host
+        )
         # return html
 
         # GET
         #
         if request.method == 'GET':
-            util.log_info(f'GET: ...')
+            util.log_info(f'timesheetsGET: ...')
             html = app.timesheets_get(host)
 
         # POST
         #
         if request.method == 'POST':
-            util.log_info(f'POST: ...')
+            util.log_info(f'timesheetsPOST: ...')
             html = app.timesheets_post(values, host)
 
             if html is None or html == '':
-                html = ui_module.create_info_html(i_type=settings.INFO_TYPE_ERROR, host=host, msg='Не удалось сформировать HTML. \nВозможно, не задан обработчик кнопки.')
+                msg = 'Не удалось сформировать HTML. \nВозможно, не задан обработчик кнопки.'
+                html = ui_module.create_info_html(module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, host=host, msg=msg)
 
         return html #'nothing', 204
 
     except Exception as ex:
         traceback.print_exc()
         util.log_error(f'{ex}')
-        return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_TIMESHEETS]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
+        return ui_module.create_info_html(msg=str(ex), module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, host=host)
 
 
 @application.route(settings.MODULES[settings.M_APPROVEMENT]['url'], methods=['GET', 'POST'])
@@ -82,7 +81,39 @@ def approvement():
     except Exception as ex:
         traceback.print_exc()
         util.log_error(f'{ex}')
-        return ui_module.create_info_html(msg=str(ex), url=settings.MODULES[settings.M_APPROVEMENT]['url'], i_type=settings.INFO_TYPE_ERROR, host=host)
+        return ui_module.create_info_html(msg=str(ex), module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, host=host)
+
+
+#
+# USERS
+#
+@application.route(settings.MODULES[settings.M_USERS]['url'], methods=['GET', 'POST'])
+def users():
+    try:
+        host, values, html_test_db, user_id = app_module.init_module(request)
+        if html_test_db != '':
+            return html_test_db
+        # util.log_debug(f'users: host={host}, user_id={user_id}, values={values}, html_test_db={html_test_db}')
+
+        # GET
+        #
+        if request.method == 'GET':
+            util.log_info(f'users.GET: ...')
+            return app.users_get(host)
+
+        # POST
+        #
+        if request.method == 'POST':
+            util.log_info(f'users.POST: ...')
+            return app.users_post(values, host)
+
+        # raise Exception('Users...')
+        # return 'nothing'  #, 204
+
+    except Exception as ex:
+        traceback.print_exc()
+        util.log_error(f'{ex}')
+        return ui_module.create_info_html(msg=str(ex), module=settings.M_USERS, i_type=settings.INFO_TYPE_ERROR, host=host)
 
 
 #

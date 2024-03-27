@@ -31,8 +31,12 @@ class BaseHTML:
 
         # HEAD
         self.__head = et.SubElement(self.__html, 'head')
-        et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/style.css'})
+        et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/common.css'})
+        et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/buttons.css'})
+        et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/inputs.css'})
+        et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/tables.css'})
         et.SubElement(self.__head, 'link', attrib={"rel": "stylesheet", "href": 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'})
+        # et.SubElement(self.__head, 'meta', attrib={"name": "viewport", "content": "min-width=870px, initial-scale=1"})
 
         t_title = et.SubElement(self.__head, 'title')
         t_title.text = title
@@ -43,11 +47,11 @@ class BaseHTML:
         # FORM
         self.__form = et.SubElement(self.__body, 'form', attrib={'name': 'form', 'method': 'POST'})
 
-        p = et.SubElement(self.__form, 'p class="b2_gray"')
+        p = et.SubElement(self.__form, 'p class="p_gray"')
         # MODULE
         m = et.SubElement(p, 'a style="margin:10px;"')
 
-        if host is None or module is None:
+        if host is None or module == '':
             m.text = ''
         else:
             m.text = module['name'] + ': ' + f'user: {str(util.get_cache_property(host, settings.C_USER_ID))}, url={module["url"]}'
@@ -58,8 +62,7 @@ class BaseHTML:
                                 attrib={
                                     'type': 'submit',
                                     'name': settings.LOGOFF_BUTTON,
-                                    'style': 'margin-right: 7px;',
-                                    'class': 'right btn-hxw'
+                                    'class': 'right btn-icon'
                                 })
         i = et.SubElement(log_off, 'i', {'class': 'fa fa-user-circle-o fa-lg'})  # fa-user-o
         i.text = '\n'  # !!!Обязательно!!! Иначе, создает одиночный тэг <i .... />, вместо парного <i> ... </i>
@@ -69,9 +72,8 @@ class BaseHTML:
                                 'button title="Обновить"',
                                 attrib={
                                     'type': 'submit',
-                                    'name': settings.UPDATE_TIMESHEET_BUTTON,
-                                    'style': 'margin-right: 7px;',
-                                    'class': 'right btn-hxw'
+                                    'name': settings.UPDATE_BUTTON,
+                                    'class': 'right btn-icon'
                                 })
         i = et.SubElement(log_off, 'i', {'class': 'fa fa-refresh fa-lg'})
         i.text = '\n'
@@ -114,7 +116,6 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
         date = str(tsh_entry.get(settings.F_TSH_DATE))
         comment = str(tsh_entry.get(settings.F_TSH_COMMENT))
 
-
     p = et.SubElement(form, 'p')
 
     # TABLE
@@ -126,25 +127,25 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     col = et.SubElement(row, 'td colspan="5" align="center"')  # Объединенная ячейка
 
     # Кнопка Текущая неделя
-    btn = et.SubElement(col, 'button title="Текущая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_CURRENT})
-    i = et.SubElement(btn, 'i class="fa fa-calendar" aria-hidden="true"')
+    btn = et.SubElement(col, 'button title="Текущая неделя" class="btn-icon"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_CURRENT})
+    i = et.SubElement(btn, 'i class="fa fa-calendar fa-lg" aria-hidden="true"')
     i.text = '\n'
 
     # Кнопка Назад
-    btn = et.SubElement(col, 'button title="Предыдущая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_PREV})
+    btn = et.SubElement(col, 'button title="Предыдущая неделя" class="btn-icon"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_PREV})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-left fa-lg" aria-hidden="true"')
     i.text = '\n'
 
     # Кнопка Вперед
-    btn = et.SubElement(col, 'button title="Следующая неделя" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_NEXT})
+    btn = et.SubElement(col, 'button title="Следующая неделя" class="btn-icon"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON_NEXT})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-right fa-lg" aria-hidden="true"')
     i.text = '\n'
 
     # Календарь
-    et.SubElement(col, 'input ' + settings.ENTER_DISABLE, attrib={'type': 'week', 'name': INPUT_WEEK_NAME, 'value': week, 'style': 'margin:2px; padding:2px; border: 2px solid black; border-radius: 10px;'})
+    et.SubElement(col, 'input ' + settings.ENTER_DISABLE, attrib={'type': 'week', 'name': INPUT_WEEK_NAME, 'value': week, 'style': 'border-radius: 10px; margin: 0px 0px 5px 5px;'})
 
     # Кнопка Применить
-    btn = et.SubElement(col, 'button title="Выбрать неделю" class="btn-hxw"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON})
+    btn = et.SubElement(col, 'button title="Выбрать неделю" class="btn-icon"', attrib={'type': 'submit', 'name': settings.WEEK_BUTTON})
     i = et.SubElement(btn, 'i class="fa fa-arrow-circle-o-down fa-lg" aria-hidden="true"')
     i.text = '\n'
 
@@ -152,32 +153,32 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     #
     row = et.SubElement(table, 'tr', {'style': 'border: 2px solid green'})
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL)
+    lab = et.SubElement(col, settings.TAG_TEXT)
     lab.text = 'Дата:'
 
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL)
+    lab = et.SubElement(col, settings.TAG_TEXT)
     lab.text = 'Проект:'
 
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL)
+    lab = et.SubElement(col, settings.TAG_TEXT)
     lab.text = 'Часы:'
 
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL + ' title="Дополнительная информация"')
+    lab = et.SubElement(col, settings.TAG_TEXT + ' title="Дополнительная информация"')
     lab.text = 'Описание:'
 
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL + ' title="Комментарий согласования с руководителем"')
+    lab = et.SubElement(col, settings.TAG_TEXT + ' title="Комментарий согласования с руководителем"')
     lab.text = 'Комментарий:'
 
     col = et.SubElement(row, settings.TAG_TD_CENTER)
-    lab = et.SubElement(col, settings.TAG_LABEL)
+    lab = et.SubElement(col, settings.TAG_TEXT)
     lab.text = 'Статус:'
 
     # FIELDS ROW
     #
-    row = et.SubElement(table, 'tr', {'style': 'border: 2px solid green'})
+    row = et.SubElement(table, 'tr')
     # ДАТА
     col = et.SubElement(row, 'td')
     et.SubElement(col, 'input ' + settings.ENTER_DISABLE, attrib={'type': 'date', 'name': DATE_NAME, 'value': date})
@@ -186,7 +187,7 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     col = et.SubElement(row, 'td')
     prj_id = util.get_current_project_id(host)
     prj_dict = data_module.get_all_projects_dict()
-    p_list = et.SubElement(col, 'select style="max-width:200px;"', attrib={'name': SELECT_PROJECT_NAME})
+    p_list = et.SubElement(col, 'select', attrib={'name': SELECT_PROJECT_NAME})
 
     if prj_dict is None:
         raise Exception(f'Список проектов не сформирован. Возможно, нет подключения к базе данных!')
@@ -206,11 +207,11 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
 
     # ЗАМЕТКИ
     col = et.SubElement(row, 'td')
-    et.SubElement(col, 'input size="20" ' + settings.ENTER_DISABLE, attrib={'type': 'text', 'name': INPUT_NOTE_NAME, 'placeholder': '', 'value': note, 'title': note})
+    et.SubElement(col, 'input size="20" ' + settings.ENTER_DISABLE, attrib={'type': 'text', 'name': INPUT_NOTE_NAME, 'value': note, 'title': note})
 
     # КОММЕНТАРИЙ
     col = et.SubElement(row, 'td')
-    et.SubElement(col, 'input size="10" ' + settings.ENTER_DISABLE, attrib={'type': 'text', 'name': INPUT_COMMENT_NAME, 'value': comment, 'title': comment})
+    et.SubElement(col, 'input size="20" ' + settings.ENTER_DISABLE, attrib={'type': 'text', 'name': INPUT_COMMENT_NAME, 'value': comment, 'title': comment})
 
     # СТАТУСЫ
     col = et.SubElement(row, 'td')
@@ -227,9 +228,9 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
     #
     row_1 = et.SubElement(table, 'tr')
     col_table = et.SubElement(row_1, 'td colspan=5 rowspan=3 align=center', {'style': 'border: 2px solid'})  # Объединенная ячейка для таблицы
-    col = et.SubElement(row_1, 'td', {'align': 'center', 'valign': 'top', 'width': '50'})
+    col_btns = et.SubElement(row_1, 'td', {'align': 'center', 'valign': 'top', 'width': '50'})
     # Кнопка СОХРАНИТЬ
-    btn_save = et.SubElement(col, 'button', attrib={'type': 'submit', 'name': settings.SAVE_BUTTON, 'value': 'submit'})
+    btn_save = et.SubElement(col_btns, 'button', attrib={'type': 'submit', 'name': settings.SAVE_BUTTON, 'value': 'submit'})
     btn_save.text = 'сохранить'
 
     et.SubElement(table, 'tr')
@@ -238,12 +239,12 @@ def add_timesheets_info_area(host=None, form=None, tsh_entry=None):
         b_tag_name = 'button disabled'
     else:
         b_tag_name = 'button'
-    btn_delete = et.SubElement(col, b_tag_name, attrib={'type': 'submit', 'name': settings.DELETE_BUTTON, 'value': 'delete'})
+    btn_delete = et.SubElement(col_btns, b_tag_name, attrib={'type': 'submit', 'name': settings.DELETE_BUTTON, 'value': 'delete'})
     btn_delete.text = 'удалить'
 
     et.SubElement(table, 'tr')
     # Кнопка СОЗДАТЬ
-    # btn_new = et.SubElement(col, settings.TAG_BUTTON, attrib={'type': 'submit', 'name': settings.NEW_BUTTON, 'value': 'new'})
+    # btn_new = et.SubElement(col_btns, settings.TAG_BUTTON, attrib={'type': 'submit', 'name': settings.NEW_BUTTON, 'value': 'new'})
     # btn_new.text = 'создать'
 
     # Кнопка ОБНОВИТЬ (зачитать из БД) - нужно перенести в HEADER
@@ -267,13 +268,13 @@ def add_timesheet_table_area(host=None, form=None, data=None, column=None):
     # HEAD ROW (project + dates)
     #
     dates_node = et.SubElement(table, 'tr')
-    dates_col_node = et.SubElement(dates_node, settings.TAG_TD_BTN_HEADER_CENTER)
+    dates_col_node = et.SubElement(dates_node, settings.TAG_TD_BTN_HEADER)
     lab_project = et.SubElement(dates_col_node, settings.TAG_TD_A_HEADER_P)
     lab_project.text = 'Проекты'
 
     days = util.list_dates_in_week(week=util.get_current_week(host))
     for day in days:
-        dates_cell_node = et.SubElement(dates_node, settings.TAG_TD_BTN_HEADER_CENTER)
+        dates_cell_node = et.SubElement(dates_node, settings.TAG_TD_BTN_HEADER)
         btn_day = et.SubElement(dates_cell_node, settings.TAG_TD_A_HEADER, attrib={'type': 'submit', 'name': 'btn_' + day, 'value': day})
         btn_day.text = util.date_to_day(day)
 
@@ -310,21 +311,22 @@ def add_timesheet_table_area(host=None, form=None, data=None, column=None):
 
                         # Раскрасить по статусам
                         status = time_sheets[tsh_id][settings.F_TSH_STATUS]
+                        title = f' title="Описание: {note}"'
                         if status == settings.EDIT_STATUS:
-                            btn_tag = settings.TAG_BUTTON_TABLE_EDIT + f' title="Описание: {note}"'
+                            btn_tag = settings.TAG_BUTTON_TABLE_EDIT + title
 
                         if status == settings.IN_APPROVE_STATUS:
-                            btn_tag = settings.TAG_BUTTON_TABLE_IN_APPROVE + f' title="Описание: {note}"'
+                            btn_tag = settings.TAG_BUTTON_TABLE_IN_APPROVE + title
 
                         if status == settings.APPROVED_STATUS:
-                            btn_tag = settings.TAG_BUTTON_TABLE_APPROVED + f' title="Описание: {note}"'
+                            btn_tag = settings.TAG_BUTTON_TABLE_APPROVED + title
 
                         if status == settings.REJECTED_STATUS:
-                            btn_tag = settings.TAG_BUTTON_TABLE_REJECTED + f' title="Описание: {note}"'
+                            btn_tag = settings.TAG_BUTTON_TABLE_REJECTED + title
 
                         # Выбранная ячейка
                         if curr_tsh_id == tsh_id:
-                            tag_td = settings.TAG_TD_CENTER_BORDER
+                            tag_td = settings.TAG_TD_SELECTED
                             # btn_tag = settings.TAG_BUTTON_TABLE_SELECTED
 
 
@@ -350,15 +352,23 @@ def add_timesheet_table_area(host=None, form=None, data=None, column=None):
                 btn_node.text = '0'
 
 
-def create_info_html(i_type='', msg='', url='', host=None):
+def create_info_html(i_type='', msg='', module='', host=None):
     if msg == '':
         msg = 'Информация'
 
     if i_type == '':
         i_type = settings.INFO_TYPE_INFORMATION
 
-    base_html = BaseHTML(i_type, settings.MODULES[settings.M_TIMESHEETS], host)
+    if module == '':
+        mdl = ''
+        url = ''
+    else:
+        mdl = settings.MODULES[module]
+        url = mdl['url']
+
+    base_html = BaseHTML(i_type, mdl, host)
     p = base_html.get_form()
+
 
     # RETURN
     if url != '':
@@ -436,7 +446,7 @@ def create_timesheet_html(host=None):
         tsh_entry = data_module.get_entry(tsh_id=tsh_id)
         if tsh_entry is None:
             msg = f'create_timesheet_html: Запись tsh_id="{tsh_id}" не найдена в базе данных'
-            html_i = create_info_html(settings.INFO_TYPE_ERROR, msg, settings.MODULES[settings.M_TIMESHEETS]['url'])
+            html_i = create_info_html(module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, msg=msg, host=host)
             return html_i
 
 
@@ -458,10 +468,86 @@ def create_timesheet_html(host=None):
     return base_html.get_html()
 
 
+def create_users_html(host):
+    util.log_debug('create_users_html...')
+    fields = (
+        ('ID', 50, 25, settings.F_USR_ID),
+        ('Имя', 50, 100, settings.F_USR_NAME),
+        ('Роль', 50, 80, settings.F_USR_ROLE),
+        ('Электронный адрес', 70, 200, settings.F_USR_MAIL),
+        ('Дополнительная информация', 70, 350, settings.F_USR_INFO)
+    )
+    # HTML
+    #
+    base_html = BaseHTML('Users', settings.MODULES[settings.M_USERS], host)
+    form = base_html.get_form()
+    p = et.SubElement(form, 'p')
+
+    # TABLE
+    table = et.SubElement(p, 'table style="border: 0px solid blue;"')
+
+    # Поля редактирования
+    #
+    for f in fields:
+        if f[0] != 'ID':
+            edt_row = et.SubElement(table, 'tr')
+            col_1 = et.SubElement(edt_row, 'td align="right" style="border: 0px solid green;"')
+            fld = et.SubElement(col_1, 'a style="min-width: 60px; display: inline-block;"')
+            fld.text = f[0]
+            col_1 = et.SubElement(edt_row, 'td style="border: 0px solid green;"')
+            i = et.SubElement(col_1, f'input size={f[1]}', {'name': f[3]})
+
+    # Обэединенная ячейка для таблицы пользователей
+    row = et.SubElement(table, 'tr')
+    col = et.SubElement(row, 'td colspan=2 align=center style="border-top: 2px solid black;"')  # Объединенная ячейка
+
+    # Таблица пользователей
+    table_users = et.SubElement(col, 'table')
+
+    # Заголовок таблицы пользователей
+    hd_row = et.SubElement(table_users, 'tr')
+    for f in fields:
+        col_h = et.SubElement(hd_row, settings.TAG_TD_BTN_HEADER, {'style': f'width: {f[2]}px;'})
+        fld = et.SubElement(col_h, 'a')
+        if f[0] != 'ID':
+            fld.text = f[0]
+        else:
+            fld.text = '\n'
+
+    # Список пользователей из БД
+    # Для тела таблицы пользователей
+    users = data_module.get_all_users_dict()
+    util.log_debug(f'create_users_html: users={users}')
+
+    for user in users:
+        row = et.SubElement(table_users, 'tr')
+        for f in fields:
+            if f[0] != 'ID':
+                col = et.SubElement(row, 'td style="border: 1px solid black;"')
+                a = et.SubElement(col, 'a')
+                a.text = users[user][f[3]]
+            else:
+                col = et.SubElement(row, 'td style="border: 2px solid gray;"')
+                a = et.SubElement(col, 'button',
+                                  {
+                                      'name': settings.TABLE_BUTTON,
+                                      'value': str(users[user][f[3]]),
+                                      'class': 'btn-t-cell'
+                                  }
+                                  )
+                a.text = '+'
+
+    return base_html.get_html()
+
+
+
+
+
+
 def t_html():
     html = et.Element('html', attrib={'lang': 'ru'})
     head = et.SubElement(html, 'head')
-    et.SubElement(head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/style.css'})
+    et.SubElement(head, 'link', attrib={"rel": "stylesheet", "type": "text/css", "href": 'static/css/common.css'})
     et.SubElement(head, 'link', attrib={"rel": "stylesheet",
                                                "href": 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'})
 
@@ -470,7 +556,7 @@ def t_html():
 
     body = et.SubElement(html, 'body')
     form = et.SubElement(body, 'form', attrib={'name': 'form', 'method': 'POST'})
-    p = et.SubElement(form, 'p class="b2_gray"')
+    p = et.SubElement(form, 'p class="p_gray"')
     b = et.SubElement(p, 'textarea placeholder="123"')
     b.text = '\n'
     b = et.SubElement(p, 'button')

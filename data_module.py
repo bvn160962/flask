@@ -209,3 +209,33 @@ def get_all_projects_dict():
 
     return projects
 
+def get_all_users_dict():
+    users = pg_module.Users()
+    all_users = users.get_all_users()
+
+    if all_users is None:
+        util.log_error(f'get_all_users_dict: не удалось сформировать список пользователей из Базы Данных')
+        return None
+
+    users = {}
+    for user in all_users:
+        usr_id = str(getattr(user, settings.F_USR_ID))
+        mail = getattr(user, settings.F_USR_MAIL)
+        if mail is None:
+            mail = ''
+        info = getattr(user, settings.F_USR_INFO)
+        if info is None:
+            info = ''
+
+        u_dict = {
+            settings.F_USR_ID: usr_id,
+            settings.F_USR_NAME: getattr(user, settings.F_USR_NAME),
+            settings.F_USR_PASSWORD: getattr(user, settings.F_USR_PASSWORD),
+            settings.F_USR_ROLE: getattr(user, settings.F_USR_ROLE),
+            settings.F_USR_MAIL: mail,
+            settings.F_USR_INFO: info,
+        }
+        users[usr_id] = u_dict
+
+    return users
+

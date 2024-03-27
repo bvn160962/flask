@@ -249,6 +249,24 @@ class Projects:
             util.log_error(f'Error on getting all projects: ({ex})')
 
 
+class Users:
+
+    SQL_ALL_USERS = f'Select {settings.F_USR_ALL} From ts_users Order by {settings.F_USR_NAME}'
+
+    @classmethod
+    def get_all_users(cls):
+        try:
+            # util.log_debug(f'get_all_users')
+
+            conn = get_connect()
+            with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
+                curs.execute(cls.SQL_ALL_USERS)
+                return curs.fetchall()
+
+        except Exception as ex:
+            util.log_error(f'Error on getting all users: ({ex})')
+
+
 
 
 

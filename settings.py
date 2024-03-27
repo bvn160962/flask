@@ -26,22 +26,20 @@ MODULES = {
 
 # Стили для тэгов
 #
-TABLE_BUTTON_WIDTH = '50px'
-TAG_LABEL = 'label style="color: black; font-weight: bold;"'
-# TAG_BUTTON = 'button style="color: #008B8B; font-weight: bold; width: 100%; margin:2px;"'
+TAG_TEXT = 'a class=a-head'
 
 TAG_BUTTON_TABLE = f'button class="btn-t"'
-TAG_BUTTON_TABLE_SELECTED = f'button class="btn-t btn-t-sel"'
+# TAG_BUTTON_TABLE_SELECTED = f'button class="btn-t btn-t-sel"'
 TAG_BUTTON_TABLE_EDIT = f'button class="btn-t btn-t-edit"'
 TAG_BUTTON_TABLE_IN_APPROVE = f'button class="btn-t btn-t-in_approve"'
 TAG_BUTTON_TABLE_APPROVED = f'button class="btn-t btn-t-approved"'
 TAG_BUTTON_TABLE_REJECTED = f'button class="btn-t btn-t-rejected"'
 
-TAG_TD_CENTER = 'td align="center"'
-TAG_TD_CENTER_BORDER = 'td align="center" style="border: 2px solid #0000FF;"'
-TAG_TD_BTN_HEADER_CENTER = f'td align="center" style="background-color: #C0C0C0; font-weight: bold; width:{TABLE_BUTTON_WIDTH};"'
-TAG_TD_A_HEADER = f'a style="display: inline-block; max-width: {TABLE_BUTTON_WIDTH};"'
-TAG_TD_A_HEADER_P = 'a style="display: inline-block; width:300px"'
+TAG_TD_CENTER = 'td align=center'
+TAG_TD_SELECTED = 'td align=center class=td-selected'
+TAG_TD_BTN_HEADER = f'td align="center" class=td-header'
+TAG_TD_A_HEADER_P = 'a class=a-prj-head'
+TAG_TD_A_HEADER = f'a'
 
 
 SPLITTER = '#'
@@ -71,7 +69,7 @@ WEEK_BUTTON = 'week_btn'
 WEEK_BUTTON_NEXT = 'next_week_btn'
 WEEK_BUTTON_PREV = 'prev_week_btn'
 WEEK_BUTTON_CURRENT = 'current_week_btn'
-UPDATE_TIMESHEET_BUTTON = 'update_timesheet_btn'
+UPDATE_BUTTON = 'update_btn'
 LOGOFF_BUTTON = 'logoff_btn'
 
 # Атрибуты таблицы Projects
@@ -98,9 +96,13 @@ F_TSH_ALL_ID = f'{F_TSH_ID}, {F_TSH_ALL}'
 
 # Атрибуты таблицы Users
 #
-F_USR_NAME = 'usr_name'
 F_USR_ID = 'usr_id'
-
+F_USR_NAME = 'usr_name'
+F_USR_ROLE = 'usr_role'
+F_USR_PASSWORD = 'usr_password'
+F_USR_MAIL = 'usr_mail'
+F_USR_INFO = 'usr_info'
+F_USR_ALL = f'{F_USR_ID}, {F_USR_NAME}, {F_USR_ROLE}, {F_USR_PASSWORD}, {F_USR_MAIL}, {F_USR_INFO}'
 
 FLD_TSH_DICT = 'data'
 EMPTY_ID_KEY = '-'

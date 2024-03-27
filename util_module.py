@@ -56,7 +56,7 @@ def clear_cache(host):
 def print_cache():
     log_debug(f'set_cache_property: app_cache={app_cache}')
 
-def set_cache(host):
+def validate_cache(host):
     if get_current_project_id(host) is None:
         set_cache_property(host=host, prop=settings.C_PROJECT_ID, value='')
     if get_current_timesheet_id(host) is None:
