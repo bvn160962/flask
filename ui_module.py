@@ -491,11 +491,16 @@ def create_users_html(host):
     for f in fields:
         if f[0] != 'ID':
             edt_row = et.SubElement(table, 'tr')
+
             col_1 = et.SubElement(edt_row, 'td align="right" style="border: 0px solid green;"')
             fld = et.SubElement(col_1, 'a style="min-width: 60px; display: inline-block;"')
             fld.text = f[0]
-            col_1 = et.SubElement(edt_row, 'td style="border: 0px solid green;"')
-            i = et.SubElement(col_1, f'input size={f[1]}', {'name': f[3]})
+
+            col_2 = et.SubElement(edt_row, 'td style="border: 0px solid green;"')
+            i = et.SubElement(col_2, f'input size={f[1]}', {'name': f[3]})
+
+            # col_3 = et.SubElement(edt_row, 'td rowspan=3 style="border: 0px solid red;"')
+            # # i = et.SubElement(col_3, f'input size={f[1]}', {'name': f[3]})
 
     # Обэединенная ячейка для таблицы пользователей
     row = et.SubElement(table, 'tr')
@@ -535,7 +540,7 @@ def create_users_html(host):
                                       'class': 'btn-t-cell'
                                   }
                                   )
-                a.text = '+'
+                a.text = '>'
 
     return base_html.get_html()
 
