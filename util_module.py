@@ -116,9 +116,9 @@ def set_cache_property(host=None, prop=None, value=None):
 def get_current_user_id(host):
     u_id = get_cache_property(host=host, prop=settings.C_USER_ID)
 
-    if u_id is None or u_id == '':
-        log_debug(f'show login HTML {host}')
-        u_id = set_cache_property(host=host, prop=settings.C_USER_ID, value=settings.USER)
+    # if u_id is None or u_id == '':
+    #     log_debug(f'show login HTML {host}')
+    #     u_id = set_cache_property(host=host, prop=settings.C_USER_ID, value=settings.USER)
 
     return u_id
 

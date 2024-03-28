@@ -1,3 +1,5 @@
+from flask import render_template
+
 import pg_module
 import util_module as util
 import settings
@@ -17,15 +19,18 @@ def init_module(request):
     util.log_debug(f'FORM={values}')
 
     # Check login
-    user_id = util.get_current_user_id(host)  # set user_id in cache if None!!!
+    user_id = util.get_current_user_id(host)
+    html_login = ''
+    if user_id is None or user_id == '':
+        html_login = render_template('login.html')
 
     # Validate cache
     util.validate_cache(host)
 
     # Check DB connection
-    html = pg_module.test_connection(host)
+    html_test_db = pg_module.test_connection(host)
 
-    return host, values, html, user_id
+    return host, values, html_test_db, html_login
 
 def logoff(module, host):
     return ui_module.create_info_html(module=module, i_type=settings.INFO_TYPE_INFORMATION, msg='Нажата кнопка Sign off', host=host)

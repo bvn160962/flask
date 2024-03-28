@@ -28,9 +28,12 @@ def timesheets():
         # _test()
         # return ui_module.t_html()
 
-        host, values, html_test_db, user_id = app_module.init_module(request)
+        host, values, html_test_db, html_login = app_module.init_module(request)
         if html_test_db != '':
             return html_test_db
+
+        if html_login != '':
+            return html_login
 
         # Установить неделю в кэш
         #
@@ -71,17 +74,46 @@ def timesheets():
         return ui_module.create_info_html(msg=str(ex), module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, host=host)
 
 
-@application.route(settings.MODULES[settings.M_APPROVEMENT]['url'], methods=['GET', 'POST'])
-def approvement():
+#
+# PROJECTS
+#
+@application.route(settings.MODULES[settings.M_PROJECTS]['url'], methods=['GET', 'POST'])
+def projects():
     try:
-        host = request.environ.get('REMOTE_ADDR')
+        host, values, html_test_db, html_login = app_module.init_module(request)
+        if html_test_db != '':
+            return html_test_db
+
+        if html_login != '':
+            return html_login
 
         return 'nothing', 204
 
     except Exception as ex:
         traceback.print_exc()
         util.log_error(f'{ex}')
-        return ui_module.create_info_html(msg=str(ex), module=settings.M_TIMESHEETS, i_type=settings.INFO_TYPE_ERROR, host=host)
+        return ui_module.create_info_html(msg=str(ex), module=settings.M_PROJECTS, i_type=settings.INFO_TYPE_ERROR, host=host)
+
+
+#
+# APPROVEMENT
+#
+@application.route(settings.MODULES[settings.M_APPROVEMENT]['url'], methods=['GET', 'POST'])
+def approvement():
+    try:
+        host, values, html_test_db, html_login = app_module.init_module(request)
+        if html_test_db != '':
+            return html_test_db
+
+        if html_login != '':
+            return html_login
+
+        return 'nothing', 204
+
+    except Exception as ex:
+        traceback.print_exc()
+        util.log_error(f'{ex}')
+        return ui_module.create_info_html(msg=str(ex), module=settings.M_APPROVEMENT, i_type=settings.INFO_TYPE_ERROR, host=host)
 
 
 #
@@ -90,10 +122,12 @@ def approvement():
 @application.route(settings.MODULES[settings.M_USERS]['url'], methods=['GET', 'POST'])
 def users():
     try:
-        host, values, html_test_db, user_id = app_module.init_module(request)
+        host, values, html_test_db, html_login = app_module.init_module(request)
         if html_test_db != '':
             return html_test_db
-        # util.log_debug(f'users: host={host}, user_id={user_id}, values={values}, html_test_db={html_test_db}')
+
+        if html_login != '':
+            return html_login
 
         # GET
         #
