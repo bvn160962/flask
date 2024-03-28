@@ -47,9 +47,9 @@ class BaseHTML:
         # FORM
         self.__form = et.SubElement(self.__body, 'form', attrib={'name': 'form', 'method': 'POST'})
 
-        p = et.SubElement(self.__form, 'p class="p_gray"')
+        p = et.SubElement(self.__form, 'p class="p_gray"', {'style': 'min-width: 700px;'})
         # MODULE
-        m = et.SubElement(p, 'a style="margin:10px;"')
+        m = et.SubElement(p, 'a style="margin:10px; font-weight: 200;"')
 
         if host is None or module == '':
             m.text = ''
@@ -77,6 +77,20 @@ class BaseHTML:
                                 })
         i = et.SubElement(log_off, 'i', {'class': 'fa fa-refresh fa-lg'})
         i.text = '\n'
+
+        # Добавляем навигацию по сайту
+        b = et.SubElement(p, 'a', attrib={'href': settings.MODULES[settings.M_APPROVEMENT]['url'], 'class': 'right btn-head'})
+        b.text = settings.MODULES[settings.M_APPROVEMENT]['name']
+
+        b = et.SubElement(p, 'a', attrib={'href': settings.MODULES[settings.M_USERS]['url'], 'class': 'right btn-head'})
+        b.text = settings.MODULES[settings.M_USERS]['name']
+
+        b = et.SubElement(p, 'a', attrib={'href': settings.MODULES[settings.M_PROJECTS]['url'], 'class': 'right btn-head'})
+        b.text = settings.MODULES[settings.M_PROJECTS]['name']
+
+        b = et.SubElement(p, 'a', attrib={'href': settings.MODULES[settings.M_TIMESHEETS]['url'], 'class': 'right btn-head'})
+        b.text = settings.MODULES[settings.M_TIMESHEETS]['name']
+
 
     def get_html(self):
         return et.tostring(self.__html).decode()

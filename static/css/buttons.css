@@ -62,3 +62,16 @@ button {
     border: 0px;
     background-color: transparent;
 }
+
+.btn-head {
+/*    width: 150px;
+    border: 1px grey solid;
+    text-align: center;
+    font-style: italic;
+    font-weight: 200;*/
+    color: var(--def-color);
+    background-color: transparent;
+    text-decoration-color: transparent;
+/*    padding: 3px;*/
+    margin: 0px 10px 0px 0px;
+}

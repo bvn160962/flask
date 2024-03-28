@@ -20,6 +20,7 @@ html, body
 /***  Для всех p
 */
 p {
+/*    min-width: 970px;*/
     width: 100%;
     display: inline-block;
     margin-block: 2px;
@@ -63,3 +64,8 @@ select {
 /*    margin:3px;*/
 }
 
+/* Выравнивает по центру
+*/
+.center{
+    float:center;
+}
