@@ -64,8 +64,24 @@ select {
 /*    margin:3px;*/
 }
 
-/* Выравнивает по центру
+/* Стиль рамки логина
 */
-.center{
-    float:center;
+.center_frame {
+    text-align: center;
+    font-family: Arial;
+    border: 8px #CCCCCC ridge;
+    margin: 0 auto;
+    height: 250px;
+    width: 200px;
+    padding: 5px;
+    position: absolute;
+    top:  50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+/* Задаём размер картинки
+*/
+.fit-picture {
+    width: 100px;
 }
